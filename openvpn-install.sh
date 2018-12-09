@@ -738,7 +738,8 @@ ifconfig-pool-persist ipp.txt" >> /etc/openvpn/server.conf
 			echo 'push "dhcp-option DNS 176.103.130.131"' >> /etc/openvpn/server.conf
 		;;
 	esac
-	echo 'push "redirect-gateway def1 bypass-dhcp" '>> /etc/openvpn/server.conf
+	#echo 'push "redirect-gateway def1 bypass-dhcp" '>> /etc/openvpn/server.conf
+	echo 'push "route 10.15.35.33 255.255.255.255" '>> /etc/openvpn/server.conf
 
 	# IPv6 network settings if needed
 	if [[ "$IPV6_SUPPORT" = 'y' ]]; then
@@ -786,9 +787,11 @@ verb 3" >> /etc/openvpn/server.conf
 	mkdir -p /var/log/openvpn
 
 	# Enable routing
-	echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.d/20-openvpn.conf
+	#echo 'net.ipv4.ip_forward=1' >> /etc/sysctl.d/20-openvpn.conf
+	sysctl -w net.ipv4.ip_forward=1
 	if [[ "$IPV6_SUPPORT" = 'y' ]]; then
-		echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.d/20-openvpn.conf
+		#echo 'net.ipv6.conf.all.forwarding=1' >> /etc/sysctl.d/20-openvpn.conf
+		sysctl -w net.ipv6.conf.all.forwarding=1
 	fi
 	# Avoid an unneeded reboot
 	sysctl --system
@@ -924,7 +927,7 @@ cipher $CIPHER
 tls-client
 tls-version-min 1.2
 tls-cipher $CC_CIPHER
-setenv opt block-outside-dns # Prevent Windows 10 DNS leak
+#setenv opt block-outside-dns # Prevent Windows 10 DNS leak
 verb 3" >> /etc/openvpn/client-template.txt
 
 if [[ $COMPRESSION_ENABLED == "y"  ]]; then
